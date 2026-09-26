@@ -1,0 +1,11 @@
+# 依赖（本项目零依赖，正常不会有这个目录）
+node_modules/
+
+# 订单数据：含顾客信息，不要提交到仓库
+data/orders.json
+data/orders.json.tmp
+data-cloud/
+
+# 临时文件
+*.log
+.tmp-*
