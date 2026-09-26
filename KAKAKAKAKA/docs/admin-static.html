@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#FFD100" />
+<title>接单台 · 志顺小馆（小仝宝店）</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FFD100'/%3E%3Ctext y='72' x='50' text-anchor='middle' font-size='58'%3E%F0%9F%94%94%3C/text%3E%3C/svg%3E" />
+<style>
+:root{--brand:#FFD100;--price:#FF4B21;--green:#00C25A;--green-d:#00A94E;--t1:#1f1f1f;--t2:#666;--t3:#999;--line:#EDEDED;--bg:#F2F3F5;--safe:env(safe-area-inset-bottom,0px);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t1);font-size:14px;}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;}
+
+/* 顶栏 */
+.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.top__brand{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700;}
+.dot{width:9px;height:9px;border-radius:50%;background:#CCC;box-shadow:0 0 0 4px rgba(0,0,0,.05);transition:.2s;}
+.dot.on{background:var(--green);box-shadow:0 0 0 4px rgba(0,194,90,.18);}
+.top__sub{font-size:12px;color:var(--t3);font-weight:400;}
+.sp{flex:1;}
+.btn{height:34px;padding:0 14px;border-radius:17px;font-size:13px;font-weight:600;background:#F4F4F4;color:var(--t2);display:inline-flex;align-items:center;gap:5px;transition:filter .15s;}
+.btn:active{filter:brightness(.94);}
+.btn--brand{background:var(--brand);color:#5a4400;}
+.btn--green{background:var(--green);color:#fff;}
+.btn--ghost{background:#fff;border:1px solid var(--line);}
+.btn.on{background:var(--green);color:#fff;}
+.btn--sm{height:30px;padding:0 12px;font-size:12px;border-radius:15px;}
+
+/* 统计 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 18px 4px;}
+.stat{background:#fff;border-radius:12px;padding:13px 15px;}
+.stat .k{font-size:12px;color:var(--t3);}
+.stat .v{font-size:23px;font-weight:700;margin-top:4px;line-height:1.1;}
+.stat .v.red{color:var(--price);}
+.stat .v.green{color:var(--green-d);}
+
+/* 过滤 */
+.tabs{display:flex;gap:8px;padding:14px 18px 10px;flex-wrap:wrap;align-items:center;}
+.tab{height:32px;padding:0 15px;border-radius:16px;background:#fff;font-size:13px;color:var(--t2);border:1px solid transparent;font-weight:500;}
+.tab.on{background:#FFF6CC;border-color:var(--brand);color:#8a6a00;font-weight:700;}
+.tab .n{font-size:11px;opacity:.7;margin-left:3px;}
+
+/* 订单卡片 */
+.list{padding:0 18px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;}
+.order{background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--line);display:flex;flex-direction:column;transition:box-shadow .18s;}
+.order.is-new{animation:flash 1.4s ease-out 2;border-color:var(--brand);}
+@keyframes flash{0%{box-shadow:0 0 0 0 rgba(255,209,0,.85);}100%{box-shadow:0 0 0 16px rgba(255,209,0,0);}}
+.order.pending{border-left:4px solid var(--price);}
+.order.cooking{border-left:4px solid #FFA800;}
+.order.done{border-left:4px solid #D8D8D8;opacity:.82;}
+.order__hd{display:flex;align-items:center;gap:9px;padding:13px 15px 11px;border-bottom:1px dashed var(--line);}
+.order__no{font-size:15px;font-weight:700;letter-spacing:.3px;}
+.order__badge{font-size:11px;border-radius:4px;padding:2px 7px;font-weight:600;}
+.b-pending{background:rgba(255,75,33,.12);color:var(--price);}
+.b-cooking{background:rgba(255,168,0,.16);color:#B87700;}
+.b-done{background:#F1F1F1;color:#999;}
+.order__time{margin-left:auto;font-size:12px;color:var(--t3);text-align:right;line-height:1.35;}
+.order__meta{display:flex;gap:16px;padding:11px 15px 4px;font-size:13px;color:var(--t2);flex-wrap:wrap;}
+.order__meta b{color:var(--t1);font-weight:600;}
+.order__table{font-size:15px;font-weight:700;color:var(--t1);}
+.order__addr{padding:6px 15px 0;font-size:12px;color:var(--t3);}
+.items{padding:8px 15px 4px;}
+.item{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:13.5px;}
+.item__q{color:var(--price);font-weight:700;min-width:30px;}
+.item__n{flex:1;min-width:0;}
+.item__p{color:var(--t3);font-size:12px;}
+.remark{margin:9px 15px 0;background:#FFF8E1;border:1px solid #FFE9A8;border-radius:9px;padding:9px 11px;font-size:13px;color:#8a6a00;line-height:1.5;word-break:break-all;}
+.remark.empty{background:#FAFAFA;border-color:var(--line);color:#B5B5B5;}
+.order__ft{display:flex;align-items:center;gap:9px;padding:11px 15px 13px;margin-top:auto;border-top:1px solid var(--line);background:#FCFCFC;}
+.order__amt{font-size:13px;color:var(--t2);}
+.order__amt b{font-size:17px;color:var(--price);font-weight:700;}
+.empty{text-align:center;padding:70px 20px;color:var(--t3);grid-column:1/-1;}
+.empty .e{font-size:46px;display:block;margin-bottom:12px;opacity:.45;}
+
+/* 首次设置 */
+.setup{max-width:520px;margin:60px auto;background:#fff;border-radius:16px;padding:28px;}
+.setup h2{font-size:18px;margin-bottom:8px;}
+.setup p{font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:16px;}
+.setup input{width:100%;height:46px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:15px;font-family:inherit;outline:none;background:#FAFAFA;}
+.setup input:focus{border-color:var(--brand);background:#fff;}
+.setup .row{display:flex;gap:10px;margin-top:14px;}
+.setup .row button{flex:1;height:46px;border-radius:23px;background:var(--green);color:#fff;font-size:15px;font-weight:600;}
+.setup code{background:#F5F5F5;padding:2px 5px;border-radius:4px;font-size:12px;}
+
+.toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;font-size:13px;padding:9px 17px;border-radius:8px;z-index:70;opacity:0;visibility:hidden;transition:.2s;}
+.toast.on{opacity:1;visibility:visible;}
+.banner{position:fixed;left:50%;top:14px;transform:translate(-50%,-140%);z-index:60;background:#fff;border-radius:12px;padding:12px 20px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:flex;align-items:center;gap:11px;font-size:14px;font-weight:600;transition:transform .3s cubic-bezier(.3,1.4,.5,1);}
+.banner.on{transform:translate(-50%,0);}
+.banner .ico{width:32px;height:32px;border-radius:50%;background:var(--price);color:#fff;display:grid;place-items:center;font-size:17px;}
+
+@media (max-width:640px){
+  .top{padding:10px 12px;gap:9px;}
+  .top__brand{font-size:14px;width:100%;}
+  .stats{grid-template-columns:repeat(2,1fr);padding:12px 12px 2px;}
+  .tabs{padding:12px 12px 8px;}
+  .list{padding:0 12px 40px;grid-template-columns:1fr;gap:11px;}
+  .btn{height:32px;padding:0 12px;font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top__brand">
+    <span class="dot" id="liveDot"></span>
+    <span>接单台 · 志顺小馆（小仝宝店）</span>
+    <span class="top__sub" id="liveText">正在连接…</span>
+  </div>
+  <div class="sp"></div>
+  <button class="btn btn--green on" id="btnSound">🔔 声音：开</button>
+  <button class="btn btn--ghost" id="btnNotify">桌面通知</button>
+  <button class="btn btn--brand" id="btnClear">清空已完成</button>
+</div>
+
+<div id="setup" class="setup" style="display:none">
+  <h2>首次设置：填接单频道码</h2>
+  <p>
+    接单台通过公共消息通道收单，需要与顾客点菜页使用<b>同一个频道码</b>。<br />
+    频道码是自动生成的随机字符串，写在顾客链接的 <code>?c=</code> 后面。<br />
+    把它填到这里（只需设置一次，会记住）：
+  </p>
+  <input id="setupInput" placeholder="例如 ZS7K2M9QP4" autocomplete="off" />
+  <div class="row"><button id="setupSave">保存并开始接单</button></div>
+</div>
+
+<div id="main" style="display:none">
+  <div class="stats">
+    <div class="stat"><div class="k">待处理</div><div class="v red" id="sPending">0</div></div>
+    <div class="stat"><div class="k">制作中</div><div class="v" id="sCooking">0</div></div>
+    <div class="stat"><div class="k">已完成</div><div class="v green" id="sDone">0</div></div>
+    <div class="stat"><div class="k">累计订单</div><div class="v" id="sTotal">0</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-f="active">待处理 + 制作中<span class="n" id="nActive">0</span></button>
+    <button class="tab" data-f="pending">仅待处理<span class="n" id="nPending">0</span></button>
+    <button class="tab" data-f="done">已完成<span class="n" id="nDone">0</span></button>
+    <button class="tab" data-f="all">全部<span class="n" id="nAll">0</span></button>
+  </div>
+
+  <div class="list" id="list"></div>
+</div>
+
+<div class="banner" id="banner"><span class="ico">🔔</span><span id="bannerText">有新订单</span></div>
+<div class="toast" id="toast"></div>
+
+<script>/**
+ * 零依赖 MQTT over WebSocket 客户端（浏览器 / Node 通用）
+ * 只实现收发订单所需的最小集合：CONNECT / CONNACK / SUBSCRIBE / SUBACK /
+ * PUBLISH(QoS0) / PINGREQ / PINGRESP / DISCONNECT
+ *
+ * 用途：让「顾客点菜页」与「接单台」都是纯静态网页，无需任何服务器。
+ */
+(function (root) {
+  'use strict';
+
+  function utf8(str) {
+    if (typeof TextEncoder !== 'undefined') return new TextEncoder().encode(str);
+    return new Uint8Array(Buffer.from(str, 'utf8'));
+  }
+  function utf8Decode(bytes) {
+    if (typeof TextDecoder !== 'undefined') return new TextDecoder('utf-8').decode(bytes);
+    return Buffer.from(bytes).toString('utf8');
+  }
+  function concat(arrays) {
+    let len = 0;
+    arrays.forEach((a) => { len += a.length; });
+    const out = new Uint8Array(len);
+    let off = 0;
+    arrays.forEach((a) => { out.set(a, off); off += a.length; });
+    return out;
+  }
+  /** MQTT 剩余长度变长编码 */
+  function encodeLength(n) {
+    const out = [];
+    do {
+      let b = n % 128;
+      n = Math.floor(n / 128);
+      if (n > 0) b |= 0x80;
+      out.push(b);
+    } while (n > 0);
+    return new Uint8Array(out);
+  }
+  function decodeLength(bytes, pos) {
+    let mul = 1, value = 0, i = pos;
+    for (;;) {
+      if (i >= bytes.length) return null;
+      const b = bytes[i++];
+      value += (b & 127) * mul;
+      if ((b & 128) === 0) break;
+      mul *= 128;
+      if (mul > 128 * 128 * 128) return null;
+    }
+    return { value, next: i };
+  }
+
+  function Client(opts) {
+    this.url = opts.url;
+    this.clientId = opts.clientId || ('mqttjs_' + Math.random().toString(16).slice(2, 10));
+    this.keepalive = opts.keepalive || 45;
+    this.onMessage = opts.onMessage || function () {};
+    this.onOpen = opts.onOpen || function () {};
+    this.onClose = opts.onClose || function () {};
+    this.onError = opts.onError || function () {};
+    this.ws = null;
+    this.connected = false;
+    this._pingTimer = null;
+    this._retry = 0;
+    this._closedByUser = false;
+  }
+
+  Client.prototype.connect = function () {
+    const self = this;
+    this._closedByUser = false;
+    let ws;
+    try { ws = new WebSocket(this.url, ['mqtt']); } catch (e) { this.onError(e); return; }
+    ws.binaryType = 'arraybuffer';
+    this.ws = ws;
+
+    ws.onopen = function () {
+      const idBytes = utf8(self.clientId);
+      const variable = new Uint8Array([
+        0x00, 0x04, 0x4d, 0x51, 0x54, 0x54,   // 协议名 "MQTT"
+        0x04,                                  // 协议级别 4
+        0x02,                                  // 连接标志：clean session
+        (self.keepalive >> 8) & 0xff, self.keepalive & 0xff
+      ]);
+      const payload = concat([new Uint8Array([(idBytes.length >> 8) & 0xff, idBytes.length & 0xff]), idBytes]);
+      const body = concat([variable, payload]);
+      ws.send(concat([new Uint8Array([0x10]), encodeLength(body.length), body]));
+    };
+
+    ws.onmessage = function (ev) {
+      let bytes;
+      if (ev.data instanceof ArrayBuffer) bytes = new Uint8Array(ev.data);
+      else if (typeof Blob !== 'undefined' && ev.data instanceof Blob) {
+        const fr = new FileReader();
+        fr.onload = function () { self._handle(new Uint8Array(fr.result)); };
+        fr.readAsArrayBuffer(ev.data);
+        return;
+      } else bytes = new Uint8Array(ev.data);
+      self._handle(bytes);
+    };
+
+    ws.onerror = function (e) { self.onError(e); };
+    ws.onclose = function () {
+      self.connected = false;
+      if (self._pingTimer) { clearInterval(self._pingTimer); self._pingTimer = null; }
+      self.onClose();
+      if (!self._closedByUser) {
+        // 自动重连（指数退避，最长 30 秒）
+        self._retry++;
+        const delay = Math.min(30000, 1000 * Math.pow(1.6, Math.min(self._retry, 8)));
+        setTimeout(function () { if (!self._closedByUser) self.connect(); }, delay);
+      }
+    };
+  };
+
+  Client.prototype._handle = function (bytes) {
+    const type = bytes[0] >> 4;
+    if (type === 2) {                     // CONNACK
+      const rc = bytes[3];
+      if (rc === 0) {
+        this.connected = true;
+        this._retry = 0;
+        this._startPing();
+        this.onOpen();
+      } else {
+        this.onError(new Error('MQTT 连接被拒，返回码 ' + rc));
+      }
+      return;
+    }
+    if (type === 3) {                     // PUBLISH (QoS0)
+      const len = decodeLength(bytes, 1);
+      if (!len) return;
+      const pktEnd = len.next + len.value;   // 剩余长度字段之后 + 剩余长度 = 报文结束位置
+      let pos = len.next;
+      const topicLen = (bytes[pos] << 8) | bytes[pos + 1];
+      pos += 2;
+      const topic = utf8Decode(bytes.subarray(pos, pos + topicLen));
+      pos += topicLen;
+      const qos = (bytes[0] >> 1) & 3;
+      if (qos > 0) pos += 2;              // 包标识符
+      const payload = utf8Decode(bytes.subarray(pos, pktEnd));
+      this.onMessage(topic, payload);
+      return;
+    }
+    if (type === 13) return;               // PINGRESP
+    if (type === 9) {                      // SUBACK
+      return;
+    }
+  };
+
+  Client.prototype._startPing = function () {
+    const self = this;
+    if (this._pingTimer) clearInterval(this._pingTimer);
+    this._pingTimer = setInterval(function () {
+      if (self.ws && self.ws.readyState === 1) {
+        self.ws.send(new Uint8Array([0xc0, 0x00]));   // PINGREQ
+      }
+    }, Math.max(10, this.keepalive - 10) * 1000);
+  };
+
+  /** 订阅主题，qos 固定 0 */
+  Client.prototype.subscribe = function (topic) {
+    if (!this.connected) return false;
+    const t = utf8(topic);
+    const payload = concat([new Uint8Array([0x00, 0x01]), new Uint8Array([(t.length >> 8) & 0xff, t.length & 0xff]), t, new Uint8Array([0x00])]);
+    this.ws.send(concat([new Uint8Array([0x82]), encodeLength(payload.length), payload]));
+    return true;
+  };
+
+  /** 发布消息，qos 固定 0；retain=true 时服务端保留最后一条（可用于补单） */
+  Client.prototype.publish = function (topic, message, retain) {
+    if (!this.connected) return false;
+    const t = utf8(topic);
+    const m = utf8(message);
+    const body = concat([new Uint8Array([(t.length >> 8) & 0xff, t.length & 0xff]), t, m]);
+    const header = 0x30 | (retain ? 0x01 : 0x00);
+    this.ws.send(concat([new Uint8Array([header]), encodeLength(body.length), body]));
+    return true;
+  };
+
+  Client.prototype.disconnect = function () {
+    this._closedByUser = true;
+    if (this._pingTimer) { clearInterval(this._pingTimer); this._pingTimer = null; }
+    try { if (this.ws && this.ws.readyState === 1) this.ws.send(new Uint8Array([0xe0, 0x00])); } catch (e) {}
+    try { if (this.ws) this.ws.close(); } catch (e) {}
+  };
+
+  const api = { Client: Client, utf8: utf8, utf8Decode: utf8Decode };
+
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.MQTTWS = api;
+})(typeof self !== 'undefined' ? self : this);
+</script>
+<script>
+(function () {
+  'use strict';
+
+  /* ============ 配置 ============ */
+  var BROKER = 'wss://broker.emqx.io:8084/mqtt';   // 国内可达，备用：wss://broker.hivemq.com:8884/mqtt
+  var BROKER_FALLBACK = 'wss://broker.hivemq.com:8884/mqtt';
+  var TOPIC_NS = 'zishun/diancai/v1/';
+  var STORE_KEY = 'zishun-admin-channel';
+  var STORE_ORDERS = 'zishun-admin-orders';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var CHANNEL = '';
+  var ORDERS = [];
+  var FILTER = 'active';
+  var SOUND = true;
+  var FRESH = {};
+  var client = null;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('on'); }, 1800);
+  }
+  function beep(times) {
+    if (!SOUND) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      var ctx = new AC();
+      for (var i = 0; i < (times || 2); i++) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = i % 2 === 0 ? 880 : 1180;
+        o.connect(g); g.connect(ctx.destination);
+        var t0 = ctx.currentTime + i * 0.22;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.32, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2);
+        o.start(t0); o.stop(t0 + 0.22);
+      }
+      setTimeout(function () { try { ctx.close(); } catch (e) {} }, 1200);
+    } catch (e) {}
+  }
+  function banner(text) {
+    $('bannerText').textContent = text;
+    $('banner').classList.add('on');
+    setTimeout(function () { $('banner').classList.remove('on'); }, 3800);
+  }
+
+  /* ============ 频道码 ============ */
+  function readChannelFromUrl() {
+    try {
+      var q = new URLSearchParams(location.search);
+      return (q.get('c') || q.get('channel') || '').trim();
+    } catch (e) { return ''; }
+  }
+  function loadChannel() {
+    var fromUrl = readChannelFromUrl();
+    if (fromUrl) { try { localStorage.setItem(STORE_KEY, fromUrl); } catch (e) {} return fromUrl; }
+    try { return localStorage.getItem(STORE_KEY) || ''; } catch (e) { return ''; }
+  }
+
+  /* ============ 订单本地留存 ============ */
+  function saveOrders() {
+    try { localStorage.setItem(STORE_ORDERS, JSON.stringify(ORDERS.slice(-300))); } catch (e) {}
+  }
+  function loadOrders() {
+    try {
+      var s = localStorage.getItem(STORE_ORDERS);
+      if (s) { ORDERS = JSON.parse(s) || []; }
+    } catch (e) { ORDERS = []; }
+  }
+
+  /* ============ 状态文案 ============ */
+  var STATUS = { pending: '待处理', cooking: '制作中', done: '已完成' };
+
+  function render() {
+    var pending = ORDERS.filter(function (o) { return o.status === 'pending'; });
+    var cooking = ORDERS.filter(function (o) { return o.status === 'cooking'; });
+    var done = ORDERS.filter(function (o) { return o.status === 'done'; });
+
+    $('sPending').textContent = pending.length;
+    $('sCooking').textContent = cooking.length;
+    $('sDone').textContent = done.length;
+    $('sTotal').textContent = ORDERS.length;
+    $('nActive').textContent = pending.length + cooking.length;
+    $('nPending').textContent = pending.length;
+    $('nDone').textContent = done.length;
+    $('nAll').textContent = ORDERS.length;
+
+    var show = ORDERS;
+    if (FILTER === 'active') show = pending.concat(cooking);
+    else if (FILTER === 'pending') show = pending;
+    else if (FILTER === 'done') show = done;
+
+    if (!show.length) {
+      $('list').innerHTML = '<div class="empty"><span class="e">🍽️</span>' +
+        (FILTER === 'done' ? '还没有已完成的订单' : '暂时没有新订单，等顾客下单吧～') + '</div>';
+      return;
+    }
+    $('list').innerHTML = show.map(card).join('');
+  }
+
+  function card(o) {
+    var items = (o.items || []).map(function (it) {
+      return '<div class="item">' +
+        '<span class="item__q">x' + it.q + '</span>' +
+        '<span class="item__n">' + esc(it.n) + '</span>' +
+        (it.p > 0 ? '<span class="item__p">¥' + (it.p * it.q) + '</span>' : '<span class="item__p">0 元</span>') +
+        '</div>';
+    }).join('');
+    var rmk = o.remark
+      ? '<div class="remark"><b>备注：</b>' + esc(o.remark) + '</div>'
+      : '<div class="remark empty">备注：无</div>';
+
+    var acts = '';
+    if (o.status === 'pending') {
+      acts = '<button class="btn btn--sm btn--brand" data-act="cooking" data-id="' + o.id + '">开始制作</button>' +
+             '<button class="btn btn--sm btn--green" data-act="done" data-id="' + o.id + '">完成</button>';
+    } else if (o.status === 'cooking') {
+      acts = '<button class="btn btn--sm btn--green" data-act="done" data-id="' + o.id + '">完成出餐</button>' +
+             '<button class="btn btn--sm btn--ghost" data-act="pending" data-id="' + o.id + '">退回</button>';
+    } else {
+      acts = '<button class="btn btn--sm btn--ghost" data-act="pending" data-id="' + o.id + '">恢复</button>';
+    }
+
+    return '<article class="order ' + o.status + (FRESH[o.id] ? ' is-new' : '') + '">' +
+      '<div class="order__hd">' +
+        '<span class="order__no">#' + esc(String(o.id).slice(-6)) + '</span>' +
+        '<span class="order__badge b-' + o.status + '">' + STATUS[o.status] + '</span>' +
+        '<span class="order__time">' + esc(o.date || '') + '<br>' + esc(o.time || '') + '</span>' +
+      '</div>' +
+      '<div class="order__meta">' +
+        '<span class="order__table">桌号 ' + esc(o.table || '未填') + '</span>' +
+        '<span>方式 <b>' + esc(o.mode || '立即用餐') + '</b></span>' +
+        '<span>共 <b>' + (o.count || 0) + '</b> 件</span>' +
+      '</div>' +
+      (o.address ? '<div class="order__addr">📍 ' + esc(o.address) + '</div>' : '') +
+      '<div class="items">' + items + '</div>' +
+      rmk +
+      '<div class="order__ft">' +
+        '<span class="order__amt">' + ((o.total || 0) === 0 ? '<b>0 元</b> 免费' : '金额 <b>¥' + o.total + '</b>') + '</span>' +
+        '<span style="flex:1"></span>' + acts +
+      '</div>' +
+    '</article>';
+  }
+
+  /* ============ 操作 ============ */
+  $('list').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-act]');
+    if (!b) return;
+    var id = b.dataset.id, act = b.dataset.act;
+    var o = ORDERS.filter(function (x) { return String(x.id) === String(id); })[0];
+    if (!o) return;
+    o.status = act;
+    o.statusAt = Date.now();
+    saveOrders();
+    render();
+    toast('已更新为「' + STATUS[act] + '」');
+  });
+
+  $('btnClear').addEventListener('click', function () {
+    var n = ORDERS.filter(function (o) { return o.status === 'done'; }).length;
+    if (!n) return toast('没有已完成的订单');
+    if (!confirm('确定清空 ' + n + ' 条已完成订单？')) return;
+    ORDERS = ORDERS.filter(function (o) { return o.status !== 'done'; });
+    saveOrders(); render();
+    toast('已清空 ' + n + ' 条');
+  });
+
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('on'); });
+      t.classList.add('on');
+      FILTER = t.dataset.f;
+      render();
+    });
+  });
+
+  $('btnSound').addEventListener('click', function () {
+    SOUND = !SOUND;
+    this.textContent = SOUND ? '🔔 声音：开' : '🔕 声音：关';
+    this.classList.toggle('on', SOUND);
+    if (SOUND) beep(1);
+  });
+  $('btnNotify').addEventListener('click', function () {
+    if (!window.Notification) return toast('当前浏览器不支持桌面通知');
+    Notification.requestPermission().then(function (p) {
+      toast(p === 'granted' ? '已开启桌面通知' : '通知未授权');
+    });
+  });
+
+  /* ============ MQTT 连接 ============ */
+  function setLive(on, txt) {
+    $('liveDot').classList.toggle('on', !!on);
+    $('liveText').textContent = on
+      ? ('已连接 · ' + new Date().toLocaleTimeString('zh-CN', { hour12: false }))
+      : (txt || '未连接');
+  }
+
+  var triedFallback = false;
+  function connect(brokerUrl) {
+    var url = brokerUrl || BROKER;
+    setLive(false, '正在连接…');
+    client = new MQTTWS.Client({
+      url: url,
+      clientId: 'zishun-admin-' + Math.random().toString(16).slice(2, 10),
+      onOpen: function () {
+        setLive(true);
+        client.subscribe(TOPIC_NS + CHANNEL + '/orders');
+        toast('已开始接单');
+      },
+      onMessage: function (topic, payload) {
+        var o;
+        try { o = JSON.parse(payload); } catch (e) { return; }
+        if (!o || !o.id) return;
+        if (ORDERS.some(function (x) { return String(x.id) === String(o.id); })) return;
+        o.status = 'pending';
+        ORDERS.push(o);
+        FRESH[o.id] = 1;
+        saveOrders();
+        render();
+        FRESH = {};
+        beep(3);
+        banner('新订单：桌号 ' + (o.table || '?') + ' · ' + (o.count || 0) + ' 件');
+        if (window.Notification && Notification.permission === 'granted') {
+          try {
+            new Notification('志顺小馆 · 新订单', {
+              body: '桌号 ' + (o.table || '?') + ' ' + (o.count || 0) + ' 件' + (o.remark ? '｜' + o.remark : '')
+            });
+          } catch (e) {}
+        }
+      },
+      onClose: function () {
+        setLive(false, '连接断开，重连中…');
+        if (!triedFallback) { triedFallback = true; }
+      },
+      onError: function () {
+        setLive(false, '连接异常');
+      }
+    });
+    client.connect();
+  }
+
+  /* ============ 启动 ============ */
+  loadOrders();
+  CHANNEL = loadChannel();
+
+  if (!CHANNEL) {
+    $('setup').style.display = 'block';
+    $('setupSave').addEventListener('click', function () {
+      var v = ($('setupInput').value || '').trim();
+      if (!v) return toast('请填写频道码');
+      try { localStorage.setItem(STORE_KEY, v); } catch (e) {}
+      CHANNEL = v;
+      $('setup').style.display = 'none';
+      $('main').style.display = 'block';
+      render();
+      connect();
+    });
+  } else {
+    $('main').style.display = 'block';
+    render();
+    connect();
+  }
+})();
+</script>
+</body>
+</html>

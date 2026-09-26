@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>志顺小馆（小仝宝店）· 在线点菜</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:#F5F5F5;color:#222;display:grid;place-items:center;min-height:100vh;padding:24px}
+  .box{background:#fff;border-radius:16px;padding:28px 24px;max-width:380px;width:100%;text-align:center;
+       box-shadow:0 4px 20px rgba(0,0,0,.06)}
+  h1{font-size:19px;margin-bottom:6px}
+  p{font-size:13px;color:#888;line-height:1.8;margin-bottom:18px}
+  a.btn{display:block;height:46px;line-height:46px;border-radius:23px;background:#00C25A;color:#fff;
+        text-decoration:none;font-size:16px;font-weight:600;margin-bottom:10px}
+  a.ghost{background:#F4F4F4;color:#666}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>志顺小馆（小仝宝店）</h1>
+    <p id="tip">正在进入点菜页…</p>
+    <a class="btn" id="go" href="page-order.html">去点菜</a>
+    <a class="btn ghost" href="admin-static.html">接单台（仅店员）</a>
+  </div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var t = q.get('t'), c = q.get('c');
+  // 带了桌号或频道码，直接进点菜页（扫码场景）
+  if (t || c) {
+    location.replace('page-order.html' + location.search);
+    return;
+  }
+  document.getElementById('tip').textContent =
+    '请在桌贴二维码上扫码进入，或点下方按钮直接点菜';
+  document.getElementById('go').href = 'page-order.html';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+志顺小馆（小仝宝店）· 店铺设置
+生成时间：2026/9/26 14:26:38
+
+【接单频道码】ZS7K2M9QP4
+（相当于房间号，只有知道它的接单台能收到本店订单；请妥善保存）
+
+【接单台】
+https://zishun-diancai.onrender.com/admin-static.html?c=ZS7K2M9QP4
+没有公网时：直接双击 static/admin-static.html，填频道码 ZS7K2M9QP4
+
+【各桌顾客链接】
+  A14 号桌：https://zishun-diancai.onrender.com/page-order.html?t=A14&c=ZS7K2M9QP4
+  A15 号桌：https://zishun-diancai.onrender.com/page-order.html?t=A15&c=ZS7K2M9QP4
+  A16 号桌：https://zishun-diancai.onrender.com/page-order.html?t=A16&c=ZS7K2M9QP4
+  A17 号桌：https://zishun-diancai.onrender.com/page-order.html?t=A17&c=ZS7K2M9QP4
+  B01 号桌：https://zishun-diancai.onrender.com/page-order.html?t=B01&c=ZS7K2M9QP4
+  B02 号桌：https://zishun-diancai.onrender.com/page-order.html?t=B02&c=ZS7K2M9QP4
+  B03 号桌：https://zishun-diancai.onrender.com/page-order.html?t=B03&c=ZS7K2M9QP4
+  B04 号桌：https://zishun-diancai.onrender.com/page-order.html?t=B04&c=ZS7K2M9QP4

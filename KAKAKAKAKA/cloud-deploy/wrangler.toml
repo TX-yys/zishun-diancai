@@ -1,0 +1,18 @@
+# 志顺小馆（小仝宝店）· 在线点菜 —— Cloudflare Worker
+# 本文件用于「免注册临时账号」部署：wrangler deploy --temporary
+# 部署后 Cloudflare 会给出一个认领链接，用邮箱认领即永久保留
+
+name = "zishun-diancai"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+# 订单存储：首次部署时由 wrangler 自动创建 KV 命名空间
+[[kv_namespaces]]
+binding = "ORDERS"
+
+# 接单台口令（部署后可在 Cloudflare 后台修改）
+[vars]
+ADMIN_TOKEN = "zishun2024"
+
+# 允许通过 workers.dev 访问
+workers_dev = true

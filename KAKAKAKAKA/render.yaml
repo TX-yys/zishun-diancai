@@ -1,0 +1,24 @@
+# 志顺小馆（小仝宝店）· 在线点菜
+# Render Blueprint —— 一键部署为「纯静态站点」
+#
+# 部署后得到：
+#   顾客点菜页   https://<服务名>.onrender.com/page-order.html?t=A14&c=你的频道码
+#   接单台       https://<服务名>.onrender.com/admin-static.html?c=你的频道码
+#
+# 说明：
+#   · 纯静态托管：无服务器、无冷启动、不休眠，免费档即可长期使用
+#   · 订单通过公共消息通道(MQTT)实时传递，不需要数据库
+#   · 不需要填任何环境变量，点 Apply 即可完成
+
+services:
+  - type: static
+    name: zishun-diancai
+    plan: free
+    branch: main
+    # 构建：把 MQTT 客户端内联进页面，生成自包含的静态文件
+    buildCommand: "node build-static.js"
+    staticPublishPath: ./static
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
