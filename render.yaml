@@ -1,0 +1,45 @@
+# 志顺小馆（小仝宝店）· 在线点菜
+# Render Blueprint —— 一键部署配置
+#
+# 本项目提供两种部署形态，按需选择（默认部署「推荐」的那种）：
+#
+#  ① static（推荐）：纯静态托管，无服务器、无冷启动、访问最快
+#       顾客点菜页与接单台都是独立网页，订单通过公共消息通道(MQTT)实时传递
+#  ② web：带服务端的版本，订单存在服务本地文件，接单台由服务端提供
+#       适合想自己掌控订单数据的场景（免费档磁盘为临时存储）
+
+services:
+  # ============ ① 纯静态托管（推荐） ============
+  - type: static
+    name: zishun-diancai-static
+    plan: free
+    branch: main
+    buildCommand: "node build-static.js"
+    staticPublishPath: ./static
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+
+  # ============ ② 带服务端的版本（可选） ============
+  - type: web
+    name: zishun-diancai
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: "echo no build step"
+    startCommand: "node server.js"
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # 接单台口令：部署时在 Render 界面填写
+      - key: ADMIN_TOKEN
+        sync: false
+      # 订单数据目录（免费档磁盘为临时存储，服务重启后历史订单会重置）
+      - key: DATA_DIR
+        value: "data"
+      # 桌号列表，逗号分隔（用于 /tables 生成桌贴）
+      - key: TABLES
+        value: "A14,A15,A16,A17,B01,B02,B03,B04"
